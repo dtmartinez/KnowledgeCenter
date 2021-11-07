@@ -2,6 +2,9 @@ package com.KnowledgeCenter.App;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +24,11 @@ public class UserControllerTests {
 	
 	@Autowired
 	UserRepository userRepository;	
+	
+	@BeforeEach
+	public void cleanUpDatabase() {
+		userRepository.deleteAll();
+	}
 
 	@Test
 	public void postValidUser_retunsOk() {
@@ -28,7 +36,7 @@ public class UserControllerTests {
 
 		ResponseEntity<Object> response = testRestTemplate.postForEntity("/users", user, Object.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 	}
 
 	@Test
@@ -41,6 +49,17 @@ public class UserControllerTests {
 		assertThat(userRepository.count()).isEqualTo(1);
 	}
 	
+	@Test
+	public void postValidUser_hashesThePassword() {
+		
+		User user = createValidUser();
+		testRestTemplate.postForEntity("/users", user, Object.class);
+		
+		List<User> usersInDatabase = userRepository.findAll();
+		User savedUser = usersInDatabase.get(0);
+		assertThat(savedUser.getPassword()).isNotEqualTo(user.getPassword());
+		
+	}
 	
 	
 	

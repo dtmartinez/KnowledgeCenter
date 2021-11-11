@@ -8,7 +8,6 @@ describe('UserSignUpPage', () => {
 
 	let nameInput, passwordInput, confirmPasswordInput, submitButton;
 	const setup = (props) => {
-
 		const UserSignUpRender = render(<UserSignUpPage {...props}/>);	
 		const { getByLabelText , getByRole } = UserSignUpRender;		
 		nameInput = getByLabelText('Name');

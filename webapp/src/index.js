@@ -4,10 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserSignUpPage } from './pages/UserSignUpPage';
+import { userSignUp } from './queries/postCalls';
+
+const actions = {
+  postSignUp : userSignUp
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <UserSignUpPage />
+    <UserSignUpPage actions={actions}/>
   </React.StrictMode>,
   document.getElementById('root')
 );

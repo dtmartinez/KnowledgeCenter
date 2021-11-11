@@ -8,17 +8,10 @@ export class UserSignUpPage extends React.Component {
 		confirmPassword : ''
 	};
 
-	handleNameChange = (event) => {		
+	handleFormChange = (event) => {		
 		const value = event.target.value;
-		this.setState({name : value });
-	}
-	handlePasswordChange = (event) => {		
-		const value = event.target.value;
-		this.setState({password : value });
-	}
-	handleConfirmPasswordChange = (event) => {		
-		const value = event.target.value;
-		this.setState({confirmPassword : value });
+		const id = event.target.id;
+		this.setState({[id] : value });
 	}
 
 	handleOnClickSignUp = (event) => {		
@@ -31,17 +24,17 @@ export class UserSignUpPage extends React.Component {
 			<div>
 				<label>
 					Name
-					<input id = "Name"  
+					<input id = "name"  
 					value={this.state.name}  
-					onChange={this.handleNameChange}></input>
+					onChange={this.handleFormChange}></input>
 				</label>				
 			</div>
 			<div>
 				<label>
 					Password
-					<input id = "Password"
+					<input id = "password"
 					value={this.state.password} 
-					onChange={this.handlePasswordChange}
+					onChange={this.handleFormChange}
 					type = "password"></input>
 				</label>
 				
@@ -49,9 +42,9 @@ export class UserSignUpPage extends React.Component {
 			<div>
 				<label>
 					ConfirmPassword
-					<input id = "ConfirmPassword"
+					<input id = "confirmPassword"
 					value={this.state.confirmPassword} 
-					onChange={this.handleConfirmPasswordChange}
+					onChange={this.handleFormChange}
 					type = "password"></input>
 				</label>				
 			</div>	

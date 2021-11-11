@@ -14,8 +14,12 @@ export class UserSignUpPage extends React.Component {
 		this.setState({[id] : value });
 	}
 
-	handleOnClickSignUp = (event) => {		
-		this.props.actions.postSignUp();
+	handleOnClickSignUp = (event) => {	
+		const user = {
+			name : this.state.name,
+			password : this.state.password
+		}	
+		this.props.actions.postSignUp(user);
 	}
 
 	render(){

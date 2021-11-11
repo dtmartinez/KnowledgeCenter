@@ -76,7 +76,7 @@ describe('UserSignUpPage', () => {
 			expect(confirmPasswordInput).toHaveValue("P4sword1");
 		})
 
-		it('creates post request when fields are valid ', () =>  {
+		it('when fields are valid creates post request ', () =>  {
 				
 			const actions = {
 				postSignUp: jest.fn().mockResolvedValueOnce({})
@@ -91,6 +91,28 @@ describe('UserSignUpPage', () => {
 		
 			expect(actions.postSignUp).toHaveBeenCalledTimes(1);
 		})
+
+		it('when fields are valid creates a post request with json user', () =>  {
+				
+			const actions = {
+				postSignUp: jest.fn().mockResolvedValueOnce({})
+			};
+
+			setup({ actions });
+						
+			userEvent.type(nameInput, "username");
+			userEvent.type(passwordInput, "P4sword1");
+			userEvent.type(confirmPasswordInput, "P4sword1");
+			userEvent.click(submitButton);	
+			
+			const userJson = {
+				name : "username",
+				password : "P4sword1"
+			}
+		
+			expect(actions.postSignUp).toHaveBeenCalledWith(userJson);
+		})
+
 
 	
 		

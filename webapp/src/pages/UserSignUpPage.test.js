@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render , waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { UserSignUpPage	} from './UserSignUpPage';
 import userEvent from '@testing-library/user-event';
@@ -149,6 +149,36 @@ describe('UserSignUpPage', () => {
 			expect(spinner).toBe;
 		})	
 		
+		it('after post request sucess deactivates spinner', async () =>  {
+				
+			const actions = {
+				postSignUp: mockResponseDelay()
+			};
+
+			const { queryByRole } = setup({ actions });						
+			typeUserDataInForm();			
+			userEvent.click(submitButton);
+			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));						
+			expect(queryByRole('status')).toBeNull();
+			expect(submitButton).toBeEnabled;
+		})
+		
+		it('after post request fail deactivates spinner', async () =>  {
+				
+			const actions = {
+				postSignUp: jest.fn().mockImplementation(() => {
+					setTimeout(300);
+					return Promise.reject({ response : { data : {} } });
+				})
+			};
+
+			const { queryByRole } = setup({ actions });						
+			typeUserDataInForm();			
+			userEvent.click(submitButton);
+			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));						
+			expect(queryByRole('status')).toBeNull();
+			expect(submitButton).toBeEnabled;
+		})
 		
 
 	})

@@ -23,7 +23,13 @@ export class UserSignUpPage extends React.Component {
 		
 		this.setState({waitingForApiResponse : true})
 		if ( !this.state.waitingForApiResponse )
-			this.props.actions.postSignUp(user);
+			this.props.actions.postSignUp(user)
+			.then((response) => {
+				this.setState({waitingForApiResponse : false});
+			})
+			.catch((error) => {
+				this.setState({waitingForApiResponse : false});
+			});
 	}
 
 	render(){
@@ -60,8 +66,8 @@ export class UserSignUpPage extends React.Component {
 				<button 
 					onClick = {this.handleOnClickSignUp}
 					disabled = {this.state.waitingForApiResponse} >
-					{this.state.waitingForApiResponse && (<div class="spinner-border" role="status">
-  						<span class="sr-only">Loading...</span>
+					{this.state.waitingForApiResponse && (<div className="spinner-border" role="status">
+  						<span className="sr-only">Loading...</span>
 						</div>)}
 					Sign up
 				</button>			

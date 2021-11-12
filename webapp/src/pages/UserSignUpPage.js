@@ -5,7 +5,8 @@ export class UserSignUpPage extends React.Component {
 	state = {
 		name : '',
 		password : '',
-		confirmPassword : ''
+		confirmPassword : '',
+		waitingForApiResponse : false
 	};
 
 	handleFormChange = (event) => {		
@@ -19,7 +20,10 @@ export class UserSignUpPage extends React.Component {
 			name : this.state.name,
 			password : this.state.password
 		}
-		this.props.actions.postSignUp(user);
+		
+		this.setState({waitingForApiResponse : true})
+		if ( !this.state.waitingForApiResponse )
+			this.props.actions.postSignUp(user);
 	}
 
 	render(){
@@ -54,10 +58,15 @@ export class UserSignUpPage extends React.Component {
 			</div>	
 			<div>
 				<button 
-					onClick= {this.handleOnClickSignUp}>
+					onClick = {this.handleOnClickSignUp}
+					disabled = {this.state.waitingForApiResponse} >
+					{this.state.waitingForApiResponse && (<div class="spinner-border" role="status">
+  						<span class="sr-only">Loading...</span>
+						</div>)}
 					Sign up
-				</button>
-			</div>		
+				</button>			
+			</div>
+					
 		</div>);
 	}
 	

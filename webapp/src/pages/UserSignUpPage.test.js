@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 describe('UserSignUpPage', () => {
 
 	let nameInput, passwordInput, confirmPasswordInput, submitButton;
+
 	const setup = (props) => {
 		const UserSignUpRender = render(<UserSignUpPage {...props}/>);	
 		const { getByLabelText , getByRole } = UserSignUpRender;		
@@ -15,6 +16,19 @@ describe('UserSignUpPage', () => {
 		confirmPasswordInput = getByLabelText('ConfirmPassword');
 		submitButton = getByRole('button', { name : /Sign up/i});	
 		return UserSignUpRender;
+	}
+
+	function typeUserDataInForm() {
+		userEvent.type(nameInput, "username");
+		userEvent.type(passwordInput, "P4sword1");
+		userEvent.type(confirmPasswordInput, "P4sword1");
+	}
+
+	function mockResponseDelay() {
+		return jest.fn().mockImplementation(() => {
+			setTimeout(300);
+			return Promise.resolve();
+		});
 	}
 	
 	describe('Rendering', () => {
@@ -82,11 +96,8 @@ describe('UserSignUpPage', () => {
 			};
 
 			setup({ actions });
-						
-			userEvent.type(nameInput, "username");
-			userEvent.type(passwordInput, "P4sword1");
-			userEvent.type(confirmPasswordInput, "P4sword1");
-			userEvent.click(submitButton);							
+			typeUserDataInForm();
+			userEvent.click(submitButton);
 		
 			expect(actions.postSignUp).toHaveBeenCalledTimes(1);
 		})
@@ -98,11 +109,8 @@ describe('UserSignUpPage', () => {
 			};
 
 			setup({ actions });
-						
-			userEvent.type(nameInput, "username");
-			userEvent.type(passwordInput, "P4sword1");
-			userEvent.type(confirmPasswordInput, "P4sword1");
-			userEvent.click(submitButton);	
+			typeUserDataInForm();
+			userEvent.click(submitButton);
 			
 			const userJson = {
 				name : "username",
@@ -112,11 +120,42 @@ describe('UserSignUpPage', () => {
 			expect(actions.postSignUp).toHaveBeenCalledWith(userJson);
 		})
 
+		it('when waiting for a post response you can not send new post request', () =>  {
+				
+			const actions = {
+				postSignUp: mockResponseDelay()
+			};
 
-	
+			setup({ actions });						
+			typeUserDataInForm();
+			userEvent.click(submitButton);
+			userEvent.click(submitButton);		
+			expect(actions.postSignUp).toHaveBeenCalledTimes(1);
+			expect(submitButton).toBeDisabled();
+		})
+
+		it('when waiting for a post response displays loading spinner', () =>  {
+				
+			const actions = {
+				postSignUp: mockResponseDelay()
+			};
+
+			const { getByRole , queryByRole } = setup({ actions });						
+			typeUserDataInForm();
+			expect(queryByRole('status')).toBeNull();
+			userEvent.click(submitButton);
+			userEvent.click(submitButton);
+			const spinner = getByRole('status');			
+			expect(spinner).toBe;
+		})	
+		
 		
 
 	})
 
 
 })
+
+
+
+

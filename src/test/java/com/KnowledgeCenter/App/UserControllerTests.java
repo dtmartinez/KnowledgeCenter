@@ -34,8 +34,8 @@ public class UserControllerTests {
 	@Test
 	public void postValidUser_retunsOk() {
 		User user = createValidUser();
-		ResponseEntity<Object> response = signUpRequestResponse(user);		
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.CREATED);
 	}	
 
 	@Test
@@ -59,47 +59,62 @@ public class UserControllerTests {
 	public void postNullUserName_returnsError() {
 		User user = createValidUser();
 		user.setName(null);
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postUserNameTooShort_returnsError() {
 		User user = createValidUser();
 		user.setName("na");
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postInvalidUser_recievesInvalidUserError() {
 		User user = new User();
-		ResponseEntity<InvalidUserError> response = testRestTemplate.postForEntity("/users", user, InvalidUserError.class);
-		assertThat(response.getBody().getPath()).isEqualTo("/users");
-		assertThat(response.getBody().getMessage()).contains("not valid");		
-	}
+		InvalidUserError responseBody = invalidSignUpRequestResponse(user).getBody();
+		String bodyPath = responseBody.getPath();
+		String bodyMessage = responseBody.getMessage();
+		
+		assertThat(bodyPath).isEqualTo("/users");
+		assertThat(bodyMessage).contains("not valid");		
+	}	
 	
 	@Test
 	public void postBlankUser_recievesCorrectErrorMessages() {
 		User user = new User();
-		ResponseEntity<InvalidUserError> response = testRestTemplate.postForEntity("/users", user, InvalidUserError.class);
-		assertThat(response.getBody().getError()).contains("Name can not be empty");		
-		assertThat(response.getBody().getError()).contains("Password can not be empty");		
+		InvalidUserError responseBody = invalidSignUpRequestResponse(user).getBody();
+		String bodyError = responseBody.getError();
+		assertThat(bodyError).contains("Name can not be empty");		
+		assertThat(bodyError).contains("Password can not be empty");		
 	}
+	
 	@Test
 	public void postInvalidUser_recievesCorrectErrorMessages() {
 		User user = new User();
 		user.setName("use");
 		user.setPassword("missingANumber");
-		ResponseEntity<InvalidUserError> response = testRestTemplate.postForEntity("/users", user, InvalidUserError.class);
-		assertThat(response.getBody().getError()).contains("Name size must be");		
-		assertThat(response.getBody().getError()).contains("Password must contain");		
+		InvalidUserError responseBody = invalidSignUpRequestResponse(user).getBody();
+		String bodyError = responseBody.getError();
+		assertThat(bodyError).contains("Name size must be");		
+		assertThat(bodyError).contains("Password must contain");		
 	}
 	
 	@Test
-	public void postUserWithDuplicateName_recievesError() {
+	public void postUserWithDuplicateName_recievesErrorCode() {
 		User user = createValidUser();
 		userRepository.save(user);
-		HttpStatus response = signUpRequestResponse(user).getStatusCode();
-		assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST);		
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);	
+	}
+	@Test
+	public void postUserWithDuplicateName_recievesErrorMessage() {
+		User user = createValidUser();
+		userRepository.save(user);
+		String responseBodyAsString = signUpRequestResponse(user).getBody().toString();
+		assertThat(responseBodyAsString).containsIgnoringCase("duplicated");	
 	}
 	
 	
@@ -107,39 +122,48 @@ public class UserControllerTests {
 	public void postNulldPassword_returnsError() {
 		User user = createValidUser();
 		user.setPassword(null);
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordTooShort_returnsError() {
 		User user = createValidUser();
 		user.setPassword("pas");
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutLowercase_returnsError() {
 		User user = createValidUser();
 		user.setPassword(user.getPassword().toUpperCase());
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutUppercase_returnsError() {
 		User user = createValidUser();
 		user.setPassword(user.getPassword().toLowerCase());
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutNumber_returnsError() {
 		User user = createValidUser();
 		user.setPassword("PasswordL");		
-		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
+		assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST);
 	}	
 	
 	private ResponseEntity<Object> signUpRequestResponse(User user) {
 		return testRestTemplate.postForEntity("/users", user, Object.class);
+	}
+	
+	private ResponseEntity<InvalidUserError> invalidSignUpRequestResponse(User user) {
+		return testRestTemplate.postForEntity("/users", user, InvalidUserError.class);
 	}
 	
 	private User createValidUser() {

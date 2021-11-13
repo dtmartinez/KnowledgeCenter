@@ -13,9 +13,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.KnowledgeCenter.App.Error.InvalidUserError;
 import com.KnowledgeCenter.App.User.User;
 import com.KnowledgeCenter.App.User.UserRepository;
+import com.KnowledgeCenter.App.User.Error.InvalidUserError;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class UserControllerTests {
@@ -34,21 +34,21 @@ public class UserControllerTests {
 	@Test
 	public void postValidUser_retunsOk() {
 		User user = createValidUser();
-		ResponseEntity<Object> response = singUpRequestResponse(user);		
+		ResponseEntity<Object> response = signUpRequestResponse(user);		
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 	}	
 
 	@Test
 	public void postValidUser_savesToDatabase() {
 		User user = createValidUser();		
-	    singUpRequestResponse(user);	   
+	    signUpRequestResponse(user);	   
 		assertThat(userRepository.count()).isEqualTo(1);
 	}
 	
 	@Test
 	public void postValidUser_hashesThePassword() {		
 		User user = createValidUser();
-		singUpRequestResponse(user);
+		signUpRequestResponse(user);
 		
 		List<User> usersInDatabase = userRepository.findAll();
 		User savedUser = usersInDatabase.get(0);
@@ -59,14 +59,14 @@ public class UserControllerTests {
 	public void postNullUserName_returnsError() {
 		User user = createValidUser();
 		user.setName(null);
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postUserNameTooShort_returnsError() {
 		User user = createValidUser();
 		user.setName("na");
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
@@ -95,41 +95,50 @@ public class UserControllerTests {
 	}
 	
 	@Test
+	public void postUserWithDuplicateName_recievesError() {
+		User user = createValidUser();
+		userRepository.save(user);
+		HttpStatus response = signUpRequestResponse(user).getStatusCode();
+		assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST);		
+	}
+	
+	
+	@Test
 	public void postNulldPassword_returnsError() {
 		User user = createValidUser();
 		user.setPassword(null);
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordTooShort_returnsError() {
 		User user = createValidUser();
 		user.setPassword("pas");
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutLowercase_returnsError() {
 		User user = createValidUser();
 		user.setPassword(user.getPassword().toUpperCase());
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutUppercase_returnsError() {
 		User user = createValidUser();
 		user.setPassword(user.getPassword().toLowerCase());
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 	
 	@Test
 	public void postPasswordWithoutNumber_returnsError() {
 		User user = createValidUser();
 		user.setPassword("PasswordL");		
-		assertThat(singUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(signUpRequestResponse(user).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}	
 	
-	private ResponseEntity<Object> singUpRequestResponse(User user) {
+	private ResponseEntity<Object> signUpRequestResponse(User user) {
 		return testRestTemplate.postForEntity("/users", user, Object.class);
 	}
 	

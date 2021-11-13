@@ -1,4 +1,4 @@
-package com.KnowledgeCenter.App.Error;
+package com.KnowledgeCenter.App.User.Error;
 
 import java.util.Date;
 import java.util.List;

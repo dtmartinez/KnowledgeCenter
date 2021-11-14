@@ -30,6 +30,20 @@ describe('UserSignUpPage', () => {
 			return Promise.resolve();
 		});
 	}
+
+	function mockErrorResponseWith(errorMessage) {
+		return jest.fn().mockImplementation(() => {
+			setTimeout(300);
+	
+			return Promise.reject({
+				response: {
+					data: {
+						error: [errorMessage,]
+					}
+				}
+			});
+		});
+	}
 	
 	describe('Rendering', () => {
 		
@@ -66,7 +80,7 @@ describe('UserSignUpPage', () => {
 
 		it('has a submit button ', () =>  {
 			setup();
-			expect(submitButton).toBeInTheDocument;
+			expect(submitButton).toBeInTheDocument();
 		})	
 	})
 
@@ -87,6 +101,32 @@ describe('UserSignUpPage', () => {
 			setup();
 			userEvent.type(confirmPasswordInput, "P4sword1");
 			expect(confirmPasswordInput).toHaveValue("P4sword1");
+		})
+
+		it('enables submitButton when password and confirmPassword are the same', () => {
+			setup();
+			typeUserDataInForm();
+			expect(submitButton).toBeEnabled();
+		})
+
+		it('disables submitButton when password is empty', async () => {
+			setup();
+			await userEvent.type(confirmPasswordInput, "passwordInput");					
+			expect(submitButton).toBeDisabled();
+		})
+
+		it('disables submitButton when password and confirmPassword are different', async () => {
+			setup();
+			typeUserDataInForm();
+			await userEvent.type(confirmPasswordInput, "P4sword2")
+			expect(submitButton).toBeDisabled();
+		})
+
+		it('disables submitButton when confirmPassword and password are different', async () => {
+			setup();
+			typeUserDataInForm();
+			await userEvent.type(passwordInput, "P4sword2")
+			expect(submitButton).toBeDisabled();
 		})
 
 		it('creates post request when fields are valid', () =>  {
@@ -182,26 +222,48 @@ describe('UserSignUpPage', () => {
 
 		it('displays name validation errors', async () => {
 			const actions = {
-				postSignUp: jest.fn().mockImplementation(() => {
-					setTimeout(300);
-					
-					return Promise.reject({ response : { data : {													
-						error : ["name: Name can not be empty",]
-					} } });
-				})
-			};
-			const { getByText } = setup({ actions });						
+				postSignUp: mockErrorResponseWith("name: Name can not be empty")
+			};			
+			const { getByText } = setup({ actions });
+			typeUserDataInForm();						
 			userEvent.click(submitButton);
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));
 			const errorMessage = getByText(/name can not be empty/i);			
 			expect(errorMessage).toBeInTheDocument();
 		})
-		
 
+		it('displays password validation errors', async () => {
+			const actions = {
+				postSignUp: mockErrorResponseWith("password: Password can not be empty")
+			};
+			const { getByText } = setup({ actions });
+			typeUserDataInForm();					
+			userEvent.click(submitButton);
+			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));
+			const errorMessage = getByText(/password can not be empty/i);			
+			expect(errorMessage).toBeInTheDocument();
+		})
+
+		it('displays confirm password error when it is not the same as password', async ()=> {
+			const { getByText } = setup();
+			typeUserDataInForm();
+			await userEvent.type(confirmPasswordInput, "n0tTheSame");
+			const errorMessage = getByText(/password does not match/i);			
+			expect(errorMessage).toBeInTheDocument();
+		})
+
+		it('removes confirm password error when it is the same as password', async ()=> {
+			const { queryByText } = setup();
+			typeUserDataInForm();
+			await userEvent.type(confirmPasswordInput, "newP4sword");
+			await userEvent.type(passwordInput, "newP4sword");
+			const errorMessage = queryByText(/password does not match/i);			
+			expect(errorMessage).toBeNull();
+		})
 	})
-
-
 })
+
+
 
 
 

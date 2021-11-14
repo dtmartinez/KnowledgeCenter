@@ -7,13 +7,30 @@ export class UserSignUpPage extends React.Component {
 		password : '',
 		confirmPassword : '',
 		waitingForApiResponse : false,
-		responseErrors : {}
+		responseErrors : {},
+		matchingPasswords : true
 	};
 
 	handleFormChange = (event) => {		
 		const value = event.target.value;
 		const id = event.target.id;
-		this.setState({[id] : value });
+		this.setState({[id] : value });				
+	}
+
+	handleConfirmPassword = async (event) => {
+		await this.handleFormChange(event);
+		
+		const errors = {...this.state.responseErrors};
+		if (this.state.password && ( this.state.password === this.state.confirmPassword)){			
+			this.setState({ matchingPasswords : true });
+			this.setState({responseErrors : ""});
+		}else{
+			errors.passwordDoesNotMatch = 'Password does not match';
+			this.setState({responseErrors : errors});
+			this.setState({ matchingPasswords : false });
+		}
+
+		
 	}
 
 	handleOnClickSignUp = (event) => {	
@@ -57,9 +74,12 @@ export class UserSignUpPage extends React.Component {
 				<label>
 					Password
 					<input id = "password"
-					value={this.state.password} 
-					onChange={this.handleFormChange}
-					type = "password"></input>
+						value={this.state.password} 
+						onChange={this.handleConfirmPassword}
+						type = "password">
+					</input>
+					<div className="invalid-feedback">{this.state.responseErrors.password}</div>
+
 				</label>
 				
 			</div>
@@ -67,15 +87,18 @@ export class UserSignUpPage extends React.Component {
 				<label>
 					ConfirmPassword
 					<input id = "confirmPassword"
-					value={this.state.confirmPassword} 
-					onChange={this.handleFormChange}
-					type = "password"></input>
+						value={this.state.confirmPassword} 
+						onChange={this.handleConfirmPassword}
+						type = "password">						
+					</input>
+					<div className="invalid-feedback">{this.state.responseErrors.passwordDoesNotMatch}</div>
 				</label>				
 			</div>	
 			<div>
 				<button 
 					onClick = {this.handleOnClickSignUp}
-					disabled = {this.state.waitingForApiResponse} >
+					disabled = {this.state.waitingForApiResponse
+					 || !this.state.matchingPasswords} >
 					{this.state.waitingForApiResponse && (<div className="spinner-border" role="status">
   						<span className="sr-only">Loading...</span>
 						</div>)}
@@ -84,9 +107,7 @@ export class UserSignUpPage extends React.Component {
 			</div>
 					
 		</div>);
-	}
-	
-	
+	}	
 }
 
 UserSignUpPage.defaultProps = {

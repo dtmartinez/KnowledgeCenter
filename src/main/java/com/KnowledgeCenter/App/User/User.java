@@ -24,7 +24,7 @@ public class User {
 	@NotDuplicateUsername
 	private String name;
 	@NotBlank(message = "Password can not be empty")
-	@Size(min = 8, message = "Name size must be between 4 and 15")
+	@Size(min = 8, message = "Password must be at least 8 characters long")
 	@Pattern(regexp ="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$" , message = "Password must contain one lowercase upercase and number")
 	private String password;
 }

@@ -1,5 +1,6 @@
 package com.KnowledgeCenter.App.User.Error;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InvalidUserError {
 
-	private String error;
+	private List<String> error;
 	private String path;
 	private String message;
 	private String status;
@@ -25,11 +26,11 @@ public class InvalidUserError {
 		this.status = status;
 		this.timestamp = new Date().getTime();
 	}
-	private String processErrorList(List<FieldError> errorList) {
-		String errorString = new String();
+	private List<String> processErrorList(List<FieldError> errorList) {
+		List<String> stringListOfErrors = new ArrayList<String>();
 		for (FieldError error : errorList) {
-			errorString += error.getField() + ": " + error.getDefaultMessage() + ", ";
+			stringListOfErrors.add(error.getField() + ": " + error.getDefaultMessage());
 	    }
-		return errorString;		
+		return stringListOfErrors;		
 	}
 }

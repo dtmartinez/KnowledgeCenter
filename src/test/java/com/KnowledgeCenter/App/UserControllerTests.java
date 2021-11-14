@@ -86,7 +86,7 @@ public class UserControllerTests {
 	public void postBlankUser_recievesCorrectErrorMessages() {
 		User user = new User();
 		InvalidUserError responseBody = invalidSignUpRequestResponse(user).getBody();
-		String bodyError = responseBody.getError();
+		String bodyError = responseBody.getError().toString();
 		assertThat(bodyError).contains("Name can not be empty");		
 		assertThat(bodyError).contains("Password can not be empty");		
 	}
@@ -97,7 +97,7 @@ public class UserControllerTests {
 		user.setName("use");
 		user.setPassword("missingANumber");
 		InvalidUserError responseBody = invalidSignUpRequestResponse(user).getBody();
-		String bodyError = responseBody.getError();
+		String bodyError = responseBody.getError().toString();
 		assertThat(bodyError).contains("Name size must be");		
 		assertThat(bodyError).contains("Password must contain");		
 	}

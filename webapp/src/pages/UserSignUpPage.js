@@ -6,7 +6,8 @@ export class UserSignUpPage extends React.Component {
 		name : '',
 		password : '',
 		confirmPassword : '',
-		waitingForApiResponse : false
+		waitingForApiResponse : false,
+		responseErrors : {}
 	};
 
 	handleFormChange = (event) => {		
@@ -28,7 +29,13 @@ export class UserSignUpPage extends React.Component {
 				this.setState({waitingForApiResponse : false});
 			})
 			.catch((error) => {
+				let errors = {...this.state.responseErrors};
+								
+				if ( error.response.data && error.response.data.error)
+					errors = {...Object.fromEntries(error.response.data.error.map(e => e.split(":")))};				
+				
 				this.setState({waitingForApiResponse : false});
+				this.setState({ responseErrors : errors });
 			});
 	}
 
@@ -39,8 +46,11 @@ export class UserSignUpPage extends React.Component {
 				<label>
 					Name
 					<input id = "name"  
-					value={this.state.name}  
-					onChange={this.handleFormChange}></input>
+						value={this.state.name}  
+						onChange={this.handleFormChange}>						
+					</input>
+					<div className="invalid-feedback">{this.state.responseErrors.name}</div>
+
 				</label>				
 			</div>
 			<div>

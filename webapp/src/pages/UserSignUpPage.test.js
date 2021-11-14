@@ -89,7 +89,7 @@ describe('UserSignUpPage', () => {
 			expect(confirmPasswordInput).toHaveValue("P4sword1");
 		})
 
-		it('when fields are valid creates post request ', () =>  {
+		it('creates post request when fields are valid', () =>  {
 				
 			const actions = {
 				postSignUp: jest.fn().mockResolvedValueOnce({})
@@ -102,7 +102,7 @@ describe('UserSignUpPage', () => {
 			expect(actions.postSignUp).toHaveBeenCalledTimes(1);
 		})
 
-		it('when fields are valid creates a post request with json user', () =>  {
+		it('creates a post request with json user when fields are valid', () =>  {
 				
 			const actions = {
 				postSignUp: jest.fn().mockResolvedValueOnce({})
@@ -120,7 +120,7 @@ describe('UserSignUpPage', () => {
 			expect(actions.postSignUp).toHaveBeenCalledWith(userJson);
 		})
 
-		it('when waiting for a post response you can not send new post request', () =>  {
+		it('blocks sending new post request when waiting for a post response', () =>  {
 				
 			const actions = {
 				postSignUp: mockResponseDelay()
@@ -134,7 +134,7 @@ describe('UserSignUpPage', () => {
 			expect(submitButton).toBeDisabled();
 		})
 
-		it('when waiting for a post response displays loading spinner', () =>  {
+		it('displays loading spinner when waiting for a post response', () =>  {
 				
 			const actions = {
 				postSignUp: mockResponseDelay()
@@ -149,7 +149,7 @@ describe('UserSignUpPage', () => {
 			expect(spinner).toBe;
 		})	
 		
-		it('after post request sucess deactivates spinner', async () =>  {
+		it('deactivates spinner after post request sucess', async () =>  {
 				
 			const actions = {
 				postSignUp: mockResponseDelay()
@@ -163,7 +163,7 @@ describe('UserSignUpPage', () => {
 			expect(submitButton).toBeEnabled;
 		})
 		
-		it('after post request fail deactivates spinner', async () =>  {
+		it('deactivates spinner after post request fail', async () =>  {
 				
 			const actions = {
 				postSignUp: jest.fn().mockImplementation(() => {
@@ -178,6 +178,23 @@ describe('UserSignUpPage', () => {
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));						
 			expect(queryByRole('status')).toBeNull();
 			expect(submitButton).toBeEnabled;
+		})
+
+		it('displays name validation errors', async () => {
+			const actions = {
+				postSignUp: jest.fn().mockImplementation(() => {
+					setTimeout(300);
+					
+					return Promise.reject({ response : { data : {													
+						error : ["name: Name can not be empty",]
+					} } });
+				})
+			};
+			const { getByText } = setup({ actions });						
+			userEvent.click(submitButton);
+			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));
+			const errorMessage = getByText(/name can not be empty/i);			
+			expect(errorMessage).toBeInTheDocument();
 		})
 		
 

@@ -23,7 +23,9 @@ export class UserSignUpPage extends React.Component {
 		const errors = {...this.state.responseErrors};
 		if (this.state.password && ( this.state.password === this.state.confirmPassword)){			
 			this.setState({ matchingPasswords : true });
-			this.setState({responseErrors : ""});
+			if (errors.passwordDoesNotMatch)
+				delete errors.passwordDoesNotMatch;
+			this.setState({responseErrors : errors});
 		}else{
 			errors.passwordDoesNotMatch = 'Password does not match';
 			this.setState({responseErrors : errors});
@@ -57,12 +59,15 @@ export class UserSignUpPage extends React.Component {
 	}
 
 	render(){
-		return(<div>
-			<h1>Sign Up</h1>
-			<div>
-				<label>
+		return(<div className = "container">
+			<h1 className = "text-center">Sign Up</h1>
+			<div className = "col-12 my-2 ">
+				<label className = "col-12">
 					Name
-					<input id = "name"  
+					<input 
+						className = { this.state.responseErrors.name ? "form-control is-invalid"  : "form-control" }
+						type="text"  
+						id = "name"  
 						value={this.state.name}  
 						onChange={this.handleFormChange}>						
 					</input>
@@ -70,10 +75,11 @@ export class UserSignUpPage extends React.Component {
 
 				</label>				
 			</div>
-			<div>
-				<label>
+			<div className = "col-12 my-2">
+				<label className = "col-12">
 					Password
-					<input id = "password"
+					<input className = { this.state.responseErrors.password ? "form-control is-invalid"  : "form-control" }
+						id = "password"
 						value={this.state.password} 
 						onChange={this.handleConfirmPassword}
 						type = "password">
@@ -83,10 +89,11 @@ export class UserSignUpPage extends React.Component {
 				</label>
 				
 			</div>
-			<div>
-				<label>
+			<div className = "col-12 my-2">
+				<label className = "col-12">
 					ConfirmPassword
-					<input id = "confirmPassword"
+					<input className = { this.state.responseErrors.passwordDoesNotMatch ? "form-control is-invalid"  : "form-control" }
+						id = "confirmPassword"
 						value={this.state.confirmPassword} 
 						onChange={this.handleConfirmPassword}
 						type = "password">						
@@ -94,8 +101,8 @@ export class UserSignUpPage extends React.Component {
 					<div className="invalid-feedback">{this.state.responseErrors.passwordDoesNotMatch}</div>
 				</label>				
 			</div>	
-			<div>
-				<button 
+			<div className = "text-center">
+				<button className = "btn btn-primary"
 					onClick = {this.handleOnClickSignUp}
 					disabled = {this.state.waitingForApiResponse
 					 || !this.state.matchingPasswords} >

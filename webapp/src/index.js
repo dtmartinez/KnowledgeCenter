@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserSignUpPage } from './pages/UserSignUpPage';
 import { userSignUp } from './queries/postCalls';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const actions = {
   postSignUp : userSignUp

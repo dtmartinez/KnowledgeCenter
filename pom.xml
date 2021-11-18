@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.knowledgeCenter</groupId>
 	<artifactId>knowledgeCenter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-M1</version>
 	<packaging>war</packaging>
 	<name>knowledgeCenter</name>
 	<description>A central repository of accumulated knowledge</description>

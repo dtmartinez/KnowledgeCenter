@@ -23,13 +23,13 @@ public class UserController {
 	
 	@PostMapping("users")
 	@ResponseStatus(HttpStatus.CREATED)
-	void addUser(@RequestBody @Valid User user) {
+	public void addUser(@RequestBody @Valid User user) {
 			userService.save(user);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	InvalidUserError handleInvalidUserExceptions(MethodArgumentNotValidException exception) {
+	public InvalidUserError handleInvalidUserExceptions(MethodArgumentNotValidException exception) {
 		
 		InvalidUserError error = new InvalidUserError(
 					exception.getFieldErrors(),

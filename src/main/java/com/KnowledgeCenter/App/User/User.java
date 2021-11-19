@@ -1,5 +1,8 @@
 package com.KnowledgeCenter.App.User;
 
+import java.beans.Transient;
+import java.util.Collection;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -7,14 +10,19 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.KnowledgeCenter.App.User.Constraint.NotDuplicateUsername;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class User {
-	
+public class User implements UserDetails{
+		
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue
 	
@@ -27,4 +35,39 @@ public class User {
 	@Size(min = 8, message = "Password must be at least 8 characters long")
 	@Pattern(regexp ="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$" , message = "Password must contain one lowercase upercase and number")
 	private String password;
+	
+	
+	@Override
+	@Transient
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return AuthorityUtils.createAuthorityList("ROLE_USER");
+	}
+	@Transient
+	@Override
+	public String getUsername() {
+		return getName();
+	}
+	@Transient
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+	@Transient
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Transient
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Transient
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }

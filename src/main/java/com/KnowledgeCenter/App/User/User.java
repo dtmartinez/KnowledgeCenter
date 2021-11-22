@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.KnowledgeCenter.App.User.Constraint.NotDuplicateUsername;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
@@ -23,17 +24,22 @@ import lombok.Data;
 public class User implements UserDetails{
 		
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue
-	
+	@JsonView(JsonViews.Public.class)
 	private long id;
+	
 	@NotBlank(message = "Name can not be empty")
 	@Size(min = 4, max = 100 , message = "Name size must be between 4 and 15")
 	@NotDuplicateUsername
+	@JsonView(JsonViews.Public.class)
 	private String name;
+	
 	@NotBlank(message = "Password can not be empty")
 	@Size(min = 8, message = "Password must be at least 8 characters long")
 	@Pattern(regexp ="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$" , message = "Password must contain one lowercase upercase and number")
+	@JsonView(JsonViews.Internal.class)
 	private String password;
 	
 	

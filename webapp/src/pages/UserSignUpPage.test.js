@@ -8,7 +8,7 @@ describe('UserSignUpPage', () => {
 
 	let nameInput, passwordInput, confirmPasswordInput, submitButton;
 
-	const setup = (props) => {
+	const renderPage = (props) => {
 		const UserSignUpRender = render(<UserSignUpPage {...props}/>);	
 		const { getByLabelText , getByRole } = UserSignUpRender;		
 		nameInput = getByLabelText('Name');
@@ -54,76 +54,76 @@ describe('UserSignUpPage', () => {
 		})
 
 		it('has input form for Name', () =>  {
-			setup();
+			renderPage();
 			expect(nameInput).toBeInTheDocument;
 		})
 
 		it('has input form for password', () =>  {
-			setup();
+			renderPage();
 			expect(passwordInput).toBeInTheDocument;
 		})
 
 		it('has input form for confirm password', () =>  {
-			setup();
+			renderPage();
 			expect(confirmPasswordInput).toBeInTheDocument;
 		})
 
 		it('has password type in password input forms', () =>  {
-			setup();
+			renderPage();
 			expect(passwordInput.type).toBe('password');			
 		})
 
 		it('has password type in confirm password input forms', () =>  {
-			setup();
+			renderPage();
 			expect(confirmPasswordInput.type).toBe('password');			
 		})
 
 		it('has a submit button ', () =>  {
-			setup();
+			renderPage();
 			expect(submitButton).toBeInTheDocument();
 		})	
 	})
 
 	describe('Events', () => {
 		it('sets the name value', () => {
-			setup();
+			renderPage();
 			userEvent.type(nameInput, "username");
 			expect(nameInput).toHaveValue("username");
 		})
 
 		it('sets the password value', () =>  {
-			setup();
+			renderPage();
 			userEvent.type(passwordInput, "P4sword1");
 			expect(passwordInput).toHaveValue("P4sword1");
 		})
 
 		it('sets the confirmpassword value', () =>  {
-			setup();
+			renderPage();
 			userEvent.type(confirmPasswordInput, "P4sword1");
 			expect(confirmPasswordInput).toHaveValue("P4sword1");
 		})
 
 		it('enables submitButton when password and confirmPassword are the same', () => {
-			setup();
+			renderPage();
 			typeUserDataInForm();
 			expect(submitButton).toBeEnabled();
 		})
 
 		it('disables submitButton when password is empty', async () => {
-			setup();
+			renderPage();
 			await userEvent.type(confirmPasswordInput, "passwordInput");					
 			expect(submitButton).toBeDisabled();
 		})
 
 		it('disables submitButton when password and confirmPassword are different', async () => {
-			setup();
+			renderPage();
 			typeUserDataInForm();
 			await userEvent.type(confirmPasswordInput, "P4sword2")
 			expect(submitButton).toBeDisabled();
 		})
 
 		it('disables submitButton when confirmPassword and password are different', async () => {
-			setup();
+			renderPage();
 			typeUserDataInForm();
 			await userEvent.type(passwordInput, "P4sword2")
 			expect(submitButton).toBeDisabled();
@@ -135,7 +135,7 @@ describe('UserSignUpPage', () => {
 				postSignUp: jest.fn().mockResolvedValueOnce({})
 			};
 
-			setup({ actions });
+			renderPage({ actions });
 			typeUserDataInForm();
 			userEvent.click(submitButton);
 		
@@ -148,7 +148,7 @@ describe('UserSignUpPage', () => {
 				postSignUp: jest.fn().mockResolvedValueOnce({})
 			};
 
-			setup({ actions });
+			renderPage({ actions });
 			typeUserDataInForm();
 			userEvent.click(submitButton);
 			
@@ -166,7 +166,7 @@ describe('UserSignUpPage', () => {
 				postSignUp: mockResponseDelay()
 			};
 
-			setup({ actions });						
+			renderPage({ actions });						
 			typeUserDataInForm();
 			userEvent.click(submitButton);
 			userEvent.click(submitButton);		
@@ -180,7 +180,7 @@ describe('UserSignUpPage', () => {
 				postSignUp: mockResponseDelay()
 			};
 
-			const { getByRole , queryByRole } = setup({ actions });						
+			const { getByRole , queryByRole } = renderPage({ actions });						
 			typeUserDataInForm();
 			expect(queryByRole('status')).toBeNull();
 			userEvent.click(submitButton);
@@ -195,7 +195,7 @@ describe('UserSignUpPage', () => {
 				postSignUp: mockResponseDelay()
 			};
 
-			const { queryByRole } = setup({ actions });						
+			const { queryByRole } = renderPage({ actions });						
 			typeUserDataInForm();			
 			userEvent.click(submitButton);
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));						
@@ -212,7 +212,7 @@ describe('UserSignUpPage', () => {
 				})
 			};
 
-			const { queryByRole } = setup({ actions });						
+			const { queryByRole } = renderPage({ actions });						
 			typeUserDataInForm();			
 			userEvent.click(submitButton);
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));						
@@ -224,7 +224,7 @@ describe('UserSignUpPage', () => {
 			const actions = {
 				postSignUp: mockErrorResponseWith("name: Name can not be empty")
 			};			
-			const { getByText } = setup({ actions });
+			const { getByText } = renderPage({ actions });
 			typeUserDataInForm();						
 			userEvent.click(submitButton);
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));
@@ -236,7 +236,7 @@ describe('UserSignUpPage', () => {
 			const actions = {
 				postSignUp: mockErrorResponseWith("password: Password can not be empty")
 			};
-			const { getByText } = setup({ actions });
+			const { getByText } = renderPage({ actions });
 			typeUserDataInForm();					
 			userEvent.click(submitButton);
 			await waitFor(()=> expect(actions.postSignUp).toHaveBeenCalledTimes(1));
@@ -245,7 +245,7 @@ describe('UserSignUpPage', () => {
 		})
 
 		it('displays confirm password error when it is not the same as password', async ()=> {
-			const { getByText } = setup();
+			const { getByText } = renderPage();
 			typeUserDataInForm();
 			await userEvent.type(confirmPasswordInput, "n0tTheSame");
 			const errorMessage = getByText(/password does not match/i);			
@@ -253,7 +253,7 @@ describe('UserSignUpPage', () => {
 		})
 
 		it('removes confirm password error when it is the same as password', async ()=> {
-			const { queryByText } = setup();
+			const { queryByText } = renderPage();
 			typeUserDataInForm();
 			await userEvent.type(confirmPasswordInput, "newP4sword");
 			await userEvent.type(passwordInput, "newP4sword");

@@ -33,7 +33,7 @@ public class UserControllerTests {
 
 	@Test
 	public void postValidUser_retunsOk() {
-		User user = createValidUser();
+		User user = createValidUser();		
 		HttpStatus responseStatusCode = signUpRequestResponse(user).getStatusCode();
 		assertThat(responseStatusCode).isEqualTo(HttpStatus.CREATED);
 	}	

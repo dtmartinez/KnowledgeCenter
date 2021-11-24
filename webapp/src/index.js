@@ -4,17 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { UserSignUpPage } from './pages/UserSignUpPage';
-import { userSignUp } from './queries/postCalls';
+import { userSignUp , userLogin } from './queries/postCalls';
 import { LoginPage } from './pages/LoginPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const actions = {
-  postSignUp : userSignUp
+  postSignUp : userSignUp,
+  postLogin : userLogin
 }
 
 ReactDOM.render(
   <React.StrictMode>
-    <LoginPage />
+    <LoginPage actions = {actions} />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -255,7 +255,7 @@ describe('UserSignUpPage', () => {
 		it('removes confirm password error when it is the same as password', async ()=> {
 			const { queryByText } = renderPage();
 			typeUserDataInForm();
-			await userEvent.type(confirmPasswordInput, "newP4sword");
+		    userEvent.type(confirmPasswordInput, "newP4sword");
 			await userEvent.type(passwordInput, "newP4sword");
 			const errorMessage = queryByText(/password does not match/i);			
 			expect(errorMessage).toBeNull();
